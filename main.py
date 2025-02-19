@@ -1,7 +1,7 @@
 import pandas as pd
 
 # input
-hostler_numbers = 22
+hostler_numbers = 15
 loading_time_hr = 1/30
 
 file_path = f'data/{hostler_numbers}_hostler_density.xlsx'
