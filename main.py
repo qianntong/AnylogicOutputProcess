@@ -1,7 +1,7 @@
 import pandas as pd
 
 # input
-hostler_numbers = 22
+hostler_numbers = 15
 loading_time_hr = 1/30
 
 file_path = f'data/{hostler_numbers}_hostler_density.xlsx'
@@ -10,6 +10,8 @@ xlsx = pd.ExcelFile(file_path)
 density_data = xlsx.parse(sheet_name=0)  # density: sheet 1
 hostler_data = xlsx.parse(sheet_name=1)  # hostler: sheet 2
 truck_data = xlsx.parse(sheet_name=2)    # truck:   sheet 3
+
+total_distance = 10000  # calculated from total lane distance
 
 #  check data
 hostler_required_columns = {'start_time', 'end_time', 'HostlerDistance'}
