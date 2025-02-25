@@ -19,38 +19,43 @@ os.makedirs(output_dir, exist_ok=True)
 
 df = pd.read_excel(input_file)
 
+# exclude 150 combo
+exclude_pattern = "2_2_19_150"
+
 combo_patterns = set()
 for col in df.columns:
     match = re.match(r"(\d+)_(\d+)_(\d+)_(\d+)", col)
     if match:
         combo_pattern = match.group(0)  # Rows_Cols_BlockLen_Throughput
-        combo_patterns.add(combo_pattern)
+        if combo_pattern != exclude_pattern:
+            combo_patterns.add(combo_pattern)
+
+df_hostler_list = []
+df_truck_list = []
 
 for combo_pattern in combo_patterns:
     hostler_cols = [col for col in df.columns if re.search(f"^{combo_pattern}_\\d+_HostlerAvgDensity\\(veh/m\\)", col)]
-    df_hostler_list = []
     for density_col in hostler_cols:
         speed_col = density_col.replace("Density(veh/m)", "Speed(m/s)")
         if speed_col in df.columns:
             temp_df = df[[density_col, speed_col]].dropna()
             temp_df.columns = ['Density (veh/m)', 'Speed (m/s)']
             df_hostler_list.append(temp_df)
-    df_hostler = pd.concat(df_hostler_list, ignore_index=True) if df_hostler_list else pd.DataFrame()
 
     truck_cols = [col for col in df.columns if re.search(f"^{combo_pattern}_\\d+_TruckAvgDensity\\(veh/m\\)", col) or re.search(f"^{combo_pattern}_TruckAvgDensity\\(veh/m\\)", col)]
-    df_truck_list = []
     for density_col in truck_cols:
         speed_col = density_col.replace("Density(veh/m)", "Speed(m/s)")
         if speed_col in df.columns:
             temp_df = df[[density_col, speed_col]].dropna()
             temp_df.columns = ['Density (veh/m)', 'Speed (m/s)']
             df_truck_list.append(temp_df)
-    df_truck = pd.concat(df_truck_list, ignore_index=True) if df_truck_list else pd.DataFrame()
 
-    if df_truck.empty and df_hostler.empty:
-        print(f"Warning: No data found for combination {combo_pattern}")
-        continue
+df_hostler = pd.concat(df_hostler_list, ignore_index=True) if df_hostler_list else pd.DataFrame()
+df_truck = pd.concat(df_truck_list, ignore_index=True) if df_truck_list else pd.DataFrame()
 
+if df_truck.empty and df_hostler.empty:
+    print("Warning: No data found for the specified combinations")
+else:
     plt.figure(figsize=(8, 6))
 
     if not df_hostler.empty:
@@ -95,12 +100,12 @@ for combo_pattern in combo_patterns:
         except Exception:
             pass
 
-    plt.title(f"Density-Speed Function\n{combo_pattern}")
+    plt.title("Density-Speed Function\nAll Combinations (Excluding 2_2_19_150)")
     plt.xlabel('Density (veh/m)')
     plt.ylabel('Speed (m/s)')
     plt.legend()
     plt.tight_layout()
-    output_path = os.path.join(output_dir, f"{combo_pattern}_Combined.png")
+    output_path = os.path.join(output_dir, "All_Combinations_Combined.png")
     plt.savefig(output_path)
     plt.close()
 
