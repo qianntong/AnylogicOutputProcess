@@ -7,7 +7,7 @@ import re
 from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score
 
-# 定义拟合函数
+
 def power_func(x, a, b):
     return a * x ** b
 
@@ -23,7 +23,6 @@ def polynomial_func(x, a, b, c):
 def linear_func(x, a, b):
     return a * x + b
 
-# 用户选择的拟合函数
 fit_functions = {
     "Power": power_func,
     "Exponential": exp_func,
@@ -32,7 +31,6 @@ fit_functions = {
     # "Linear": linear_func
 }
 
-# 对应颜色
 colors = {
     "Power": "green",
     "Exponential": "orange",
@@ -41,14 +39,12 @@ colors = {
     # "Linear": "gray"
 }
 
-# 文件路径
 input_file = 'output/all_results.xlsx'
 output_dir = 'output'
 os.makedirs(output_dir, exist_ok=True)
 
 df = pd.read_excel(input_file)
 
-# 排除组合 {'Rows': 2, 'Cols': 2, 'BlockLen': 19, 'Throughput': 150}
 exclude_pattern = "2_2_19_150"
 
 combo_patterns = set()
@@ -87,7 +83,7 @@ if df_truck.empty and df_hostler.empty:
 else:
     plt.figure(figsize=(8, 6))
 
-    # ✅ **Hostler**
+    # **Hostler**
     if not df_hostler.empty:
         x_hostler = df_hostler['Density (veh/m)'].values
         y_hostler = df_hostler['Speed (m/s)'].values
@@ -113,7 +109,7 @@ else:
             except Exception:
                 pass
 
-    # ✅ **Truck**
+    # **Truck**
     if not df_truck.empty:
         x_truck = df_truck['Density (veh/m)'].values
         y_truck = df_truck['Speed (m/s)'].values

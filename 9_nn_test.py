@@ -42,10 +42,9 @@ os.makedirs(output_dir, exist_ok=True)
 
 df = pd.read_excel(input_file)
 
-# ✅ 测试集: {'Rows': 2, 'Cols': 2, 'BlockLen': 19, 'Throughput': 150}
+# test set {'Rows': 2, 'Cols': 2, 'BlockLen': 19, 'Throughput': 150}
 combo_pattern = "2_2_19_150"
 
-# ✅ 提取 Hostler 和 Truck 数据
 df_hostler_list = []
 df_truck_list = []
 
@@ -73,7 +72,6 @@ if df_truck.empty and df_hostler.empty:
 else:
     plt.figure(figsize=(8, 6))
 
-    # ✅ 训练 Sigmoid 模型
     def train_neural_net(x, y, color, label):
         x_tensor = torch.tensor(x, dtype=torch.float32).view(-1, 1)
         y_tensor = torch.tensor(y, dtype=torch.float32).view(-1, 1)
@@ -91,19 +89,15 @@ else:
             loss.backward()
             optimizer.step()
 
-        # ✅ 预测和评估
         with torch.no_grad():
             y_pred = model(x_tensor).numpy().flatten()
             mse, rmse, mae, mape, r2, adj_r2 = evaluate_model(y, y_pred)
 
-        # ✅ 打印评估结果
         print(f"\n{label} Results:")
         print(f"MSE: {mse:.4f}, RMSE: {rmse:.4f}, MAE: {mae:.4f}, MAPE: {mape:.2f}%, R²: {r2:.4f}, Adjusted R²: {adj_r2:.4f}")
 
-        # ✅ 绘制散点图
         sns.scatterplot(x=x, y=y, color=color, label=label + f" Data (R²={r2:.2f})")
 
-        # ✅ 绘制拟合曲线
         x_fit = np.linspace(min(x), max(x), 100)
         x_fit_tensor = torch.tensor(x_fit, dtype=torch.float32).view(-1, 1)
         y_fit = model(x_fit_tensor).detach().numpy().flatten()
@@ -111,7 +105,6 @@ else:
         line_color = "green" if label == "Hostler" else "yellow"
         plt.plot(x_fit, y_fit, color=line_color, linewidth=2, label=f'{label} Fit (RMSE={rmse:.2f})')
 
-    # ✅ Hostler
     if not df_hostler.empty:
         x_hostler = df_hostler['Density (veh/m)'].values
         y_hostler = df_hostler['Speed (m/s)'].values
@@ -129,7 +122,6 @@ else:
     plt.legend()
     plt.tight_layout()
 
-    # ✅ 保存图像
     output_path = os.path.join(output_dir, "Sigmoid_Test_2_2_19_150.png")
     plt.savefig(output_path)
     plt.close()
